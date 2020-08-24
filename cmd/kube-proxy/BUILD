@@ -7,6 +7,22 @@ load(
 )
 load("//staging/src/k8s.io/component-base/version:def.bzl", "version_x_defs")
 
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+go_image(
+    name = "image",
+    srcs = ["proxy.go"],
+    importpath = "k8s.io/kubernetes/cmd/kube-proxy",
+    deps = [
+        "//cmd/kube-proxy/app:go_default_library",
+        "//staging/src/k8s.io/component-base/cli/flag:go_default_library",
+        "//staging/src/k8s.io/component-base/logs:go_default_library",
+        "//staging/src/k8s.io/component-base/metrics/prometheus/restclient:go_default_library",
+        "//staging/src/k8s.io/component-base/metrics/prometheus/version:go_default_library",
+        "//vendor/github.com/spf13/pflag:go_default_library",
+    ],
+)
+
 go_binary(
     name = "kube-proxy",
     embed = [":go_default_library"],

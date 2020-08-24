@@ -7,6 +7,20 @@ load(
 )
 load("//staging/src/k8s.io/component-base/version:def.bzl", "version_x_defs")
 
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+
+go_image(
+    name = "image",
+    srcs = ["controller-manager.go"],
+    importpath = "k8s.io/kubernetes/cmd/kube-controller-manager",
+    deps = [
+        "//cmd/kube-controller-manager/app:go_default_library",
+        "//staging/src/k8s.io/component-base/logs:go_default_library",
+        "//staging/src/k8s.io/component-base/metrics/prometheus/clientgo:go_default_library",
+        "//staging/src/k8s.io/component-base/metrics/prometheus/version:go_default_library",
+    ],
+)
+
 go_binary(
     name = "kube-controller-manager",
     embed = [":go_default_library"],

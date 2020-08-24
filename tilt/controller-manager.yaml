@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fake-kube-controller-manager
+spec:
+  selector:
+    matchLabels:
+      app: fake-kube-controller-manager
+  template:
+    metadata:
+      labels:
+        app: fake-kube-controller-manager
+    spec:
+      containers:
+      - name: snack
+        image: busybox
+        command: ["busybox", "httpd", "-f", "-p", "8000"]
+        env:
+        - name: IMAGE
+          value: bazel/cmd/kube-controller-manager
+        resources:
+          requests:
+            cpu: "10m"
