@@ -15,6 +15,10 @@ BAZEL_BUILDFILES_CMD = """
   bazel query 'filter("^//", buildfiles(deps(set(%s))))' --order_output=no
   """.strip()
 
+def watch_files(files):
+  for f in files:
+    watch_file(f)
+
 def escape_target(target):
   return target.replace("//", "").replace("/", "_").replace(":", "-")
 
@@ -43,13 +47,13 @@ def bazel_labels_to_files(labels):
   return files.keys()
 
 def bazel_k8s(target):
-  build_deps_for_target(target)  # this takes care of watching
-  source_deps_for_target(target)  # this takes care of watching
+  watch_files(build_deps_for_target(target))
+  watch_files(source_deps_for_target(target))
 
   return local("bazel run %s" % target)
 
 def bazel_build(image, target, options=''):
-  build_deps_for_target(target)  # this takes care of watching
+  watch_files(build_deps_for_target(target))
 
   custom_build(
     image,
@@ -57,7 +61,6 @@ def bazel_build(image, target, options=''):
     source_deps_for_target(target),
     tag="image",
     match_in_env_vars=True,
-    ignore=['tilt_builddeps_*', 'tilt_sourcedeps_*']
   )
 
 def build_deps_for_target(target):
@@ -84,7 +87,7 @@ def source_deps_for_target(target):
 
   cmd = BAZEL_SOURCES_CMD % target
   local_resource('source-deps-{}'.format(escape_target(target)),
-                 '{} > {}'.format(cmd, file),
+                 'echo $({}) > {}'.format(cmd, file),
                  resource_deps=real_resources,
                  allow_parallel=True,
                  )
