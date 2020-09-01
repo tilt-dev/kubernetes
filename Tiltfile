@@ -1,7 +1,7 @@
 # setting this arbitrarily high because bazel can't run things in parallel anyway
 # so not much risk of killing CPU; want all the dep fetching to happen as simultaneously
 # as possible so we only have one Tiltfile update for changed dep lists, not many.
-update_settings(max_parallel_updates=16)
+update_settings(max_parallel_updates=20)
 
 real_resources=['fake-kube-apiserver', 'fake-kube-controller-manager', 'fake-kube-proxy', 'fake-kube-scheduler']
 
